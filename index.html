@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX-Flow 回路辅助套件</title>
+    <style>
+        :root {
+            --menu-width: 220px;
+            --bg-menu: #1a1d23;
+            --bg-content: #f5f5f7;
+            --text-menu: #8b8fa3;
+            --text-menu-active: #ffffff;
+            --text-menu-hover: #c0c4d6;
+            --accent: #4f8ff7;
+            --menu-item-hover-bg: #262a33;
+            --menu-item-active-bg: #2c303b;
+            --border-active: #4f8ff7;
+            --transition: 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            overflow: hidden;
+            background: #0f1117;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ========== 左侧菜单 ========== */
+        .sidebar {
+            width: var(--menu-width);
+            min-width: var(--menu-width);
+            background: var(--bg-menu);
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            -webkit-user-select: none;
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .sidebar-header {
+            padding: 28px 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+        }
+
+        .sidebar-subtitle {
+            font-size: 11px;
+            color: #5c6174;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .menu-list {
+            list-style: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+        }
+
+        .menu-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .menu-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .menu-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+        }
+
+        .menu-item {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 13.5px;
+            color: var(--text-menu);
+            cursor: pointer;
+            transition: all var(--transition);
+            border-left: 2px solid transparent;
+            letter-spacing: 0.3px;
+            position: relative;
+            background: none;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            text-align: left;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+
+        .menu-item:hover {
+            color: var(--text-menu-hover);
+            background: var(--menu-item-hover-bg);
+        }
+
+        .menu-item.active {
+            color: var(--text-menu-active);
+            background: var(--menu-item-active-bg);
+            border-left-color: var(--border-active);
+            font-weight: 500;
+        }
+
+        /* 菜单项状态标记 */
+        .menu-item .status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-left: 8px;
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+        }
+        .status-dot.online {
+            background: #34d399;
+            box-shadow: 0 0 4px rgba(52, 211, 153, 0.5);
+        }
+        .status-dot.offline {
+            background: #4a4f60;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer span {
+            font-size: 10px;
+            color: #4a4f60;
+            letter-spacing: 0.5px;
+        }
+
+        /* ========== 右侧内容区 ========== */
+        .content-area {
+            flex: 1;
+            position: relative;
+            background: var(--bg-content);
+            overflow: hidden;
+        }
+
+        .content-area iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+            background: #ffffff;
+        }
+
+        .content-area iframe.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --menu-width: 160px;
+            }
+            .sidebar-title {
+                font-size: 14px;
+            }
+            .menu-item {
+                padding: 10px 14px;
+                font-size: 12px;
+            }
+            .sidebar-header {
+                padding: 20px 14px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- 左侧菜单 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">UX-Flow</div>
+                <div class="sidebar-subtitle">回路辅助套件</div>
+            </div>
+
+            <ul class="menu-list" id="menuList">
+                <li><button class="menu-item active" data-index="0">竞品监测 <span class="status-dot offline"></span></button></li>
+                <li><button class="menu-item" data-index="1">访谈转录分析 <span class="status-dot offline"></span></button></li>
+                <li><button class="menu-item" data-index="2">信息架构生成 <span class="status-dot offline"></span></button></li>
+                <li><button class="menu-item" data-index="3">情绪板生成 <span class="status-dot offline"></span></button></li>
+                <li><button class="menu-item" data-index="4">文案优化 <span class="status-dot online"></span></button></li>
+                <li><button class="menu-item" data-index="5">可访问性检测 <span class="status-dot online"></span></button></li>
+                <li><button class="menu-item" data-index="6">设计系统一致性 <span class="status-dot online"></span></button></li>
+                <li><button class="menu-item" data-index="7">设计稿转代码 <span class="status-dot offline"></span></button></li>
+                <li><button class="menu-item" data-index="8">AB测试生成 <span class="status-dot offline"></span></button></li>
+                <li><button class="menu-item" data-index="9">旅程地图生成 <span class="status-dot offline"></span></button></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <span>UX 全流程闭环</span>
+            </div>
+        </nav>
+
+        <!-- 右侧内容区 -->
+        <div class="content-area" id="contentArea">
+            <!-- 10个iframe，由JS动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ========== 工具配置 ==========
+            const tools = [
+                { id: 'competitor-monitor', name: '竞品监测', type: 'placeholder' },
+                { id: 'interview-analysis', name: '访谈转录分析', type: 'placeholder' },
+                { id: 'ia-generator', name: '信息架构生成', type: 'placeholder' },
+                { id: 'moodboard-generator', name: '情绪板生成', type: 'placeholder' },
+                { id: 'copy-optimizer', name: '文案优化', type: 'chatbot', src: 'https://udify.app/chatbot/kEoz5w2UeCrysxY9' },
+                { id: 'a11y-checker', name: '可访问性检测', type: 'chatbot', src: 'https://udify.app/chatbot/ysWrPBwZw2f9dQvY' },
+                { id: 'design-system-checker', name: '设计系统一致性', type: 'chatbot', src: 'https://udify.app/chatbot/qRQRTypRtbQm50KX' },
+                { id: 'design-to-code', name: '设计稿转代码', type: 'placeholder' },
+                { id: 'ab-test-generator', name: 'AB测试生成', type: 'placeholder' },
+                { id: 'journey-map-generator', name: '旅程地图生成', type: 'placeholder' }
+            ];
+
+            // ========== 生成占位页HTML ==========
+            function getPlaceholderHTML(toolName, toolId) {
+                return `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${toolName} - UX-Flow</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #fafafa;
+            color: #333;
+        }
+        .placeholder {
+            text-align: center;
+            padding: 40px;
+        }
+        .placeholder .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        .placeholder h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1a1d23;
+            margin-bottom: 8px;
+        }
+        .placeholder .tag {
+            display: inline-block;
+            background: #eef2ff;
+            color: #4f8ff7;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        .placeholder p {
+            font-size: 14px;
+            color: #999;
+            max-width: 320px;
+            line-height: 1.6;
+        }
+        .placeholder .meta {
+            margin-top: 24px;
+            font-size: 11px;
+            color: #ccc;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="placeholder">
+        <div class="icon">🛠️</div>
+        <h2>${toolName}</h2>
+        <div class="tag">即将上线</div>
+        <p>该工具正在开发中，上线后将在此处展示完整功能。</p>
+        <div class="meta">${toolId}.html</div>
+    </div>
+</body>
+</html>`;
+            }
+
+            // ========== 初始化 iframe ==========
+            const contentArea = document.getElementById('contentArea');
+            const menuItems = document.querySelectorAll('.menu-item');
+            const iframes = [];
+            let activeIndex = 0;
+
+            tools.forEach((tool, index) => {
+                const iframe = document.createElement('iframe');
+                iframe.title = tool.name;
+                iframe.setAttribute('data-index', index);
+                iframe.setAttribute('data-tool-id', tool.id);
+                // 允许麦克风权限（chatbot需要）
+                iframe.setAttribute('allow', 'microphone');
+
+                if (tool.type === 'chatbot') {
+                    // 已完成的工具：直接加载远程页面
+                    iframe.src = tool.src;
+                } else {
+                    // 未完成的工具：内联占位页
+                    iframe.srcdoc = getPlaceholderHTML(tool.name, tool.id);
+                }
+
+                if (index === activeIndex) {
+                    iframe.classList.add('active');
+                }
+
+                contentArea.appendChild(iframe);
+                iframes.push(iframe);
+            });
+
+            // ========== 菜单切换逻辑 ==========
+            function switchTool(index) {
+                if (index === activeIndex) return;
+
+                // 菜单高亮切换
+                menuItems[activeIndex].classList.remove('active');
+                menuItems[index].classList.add('active');
+
+                // iframe 显示/隐藏切换（不销毁DOM，内容保持）
+                iframes[activeIndex].classList.remove('active');
+                iframes[index].classList.add('active');
+
+                activeIndex = index;
+
+                // 记住上次打开的工具
+                try {
+                    localStorage.setItem('uxflow-active-tool', index);
+                } catch (e) { /* ignore */ }
+            }
+
+            // 绑定菜单点击事件
+            menuItems.forEach((item) => {
+                item.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'), 10);
+                    switchTool(index);
+                });
+            });
+
+            // ========== 恢复上次打开的工具 ==========
+            try {
+                const savedIndex = parseInt(localStorage.getItem('uxflow-active-tool'), 10);
+                if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < tools.length && savedIndex !== activeIndex) {
+                    switchTool(savedIndex);
+                }
+            } catch (e) { /* ignore */ }
+
+            // ========== 暴露API到全局 ==========
+            window.UXFlow = {
+                switchTool: switchTool,
+                getActiveIndex: () => activeIndex,
+                getIframe: (index) => iframes[index] || null,
+                getTools: () => tools,
+                // 加载真实工具页面（后续工具完成时使用）
+                loadToolPage: function(index, src) {
+                    if (iframes[index]) {
+                        iframes[index].src = src;
+                        // 同步更新菜单状态标记
+                        const dot = menuItems[index].querySelector('.status-dot');
+                        if (dot) {
+                            dot.classList.remove('offline');
+                            dot.classList.add('online');
+                        }
+                    }
+                }
+            };
+
+            console.log('%c🧰 UX-Flow 回路辅助套件 %c已就绪',
+                'font-weight:bold;font-size:14px;', 'color:#4f8ff7;');
+            console.log('%c🟢 已接入：文案优化、可访问性检测、设计系统一致性',
+                'color:#34d399;font-size:12px;');
+            console.log('%c⚫ 其余7个工具为占位状态，陆续接入中',
+                'color:#999;font-size:12px;');
+
+        })();
+    </script>
+
+</body>
+</html>
