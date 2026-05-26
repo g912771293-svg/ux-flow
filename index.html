@@ -39,6 +39,7 @@
             width: 100vw;
         }
 
+        /* ========== 左侧菜单 ========== */
         .sidebar {
             width: var(--menu-width);
             min-width: var(--menu-width);
@@ -126,6 +127,7 @@
             font-weight: 500;
         }
 
+        /* 菜单项状态标记 */
         .menu-item .status-dot {
             display: inline-block;
             width: 6px;
@@ -144,6 +146,16 @@
             background: #4a4f60;
         }
 
+        /* 阶段分隔线 */
+        .menu-divider {
+            padding: 8px 20px 4px;
+            font-size: 10px;
+            color: #4a4f60;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            pointer-events: none;
+        }
+
         .sidebar-footer {
             padding: 16px 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.06);
@@ -156,6 +168,7 @@
             letter-spacing: 0.5px;
         }
 
+        /* ========== 右侧内容区 ========== */
         .content-area {
             flex: 1;
             position: relative;
@@ -178,6 +191,30 @@
             display: block;
         }
 
+        /* ========== 重置按钮 ========== */
+        .reset-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            background: #1a1d23;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            opacity: 0.6;
+        }
+        .reset-btn:hover {
+            opacity: 1;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
         @media (max-width: 768px) {
             :root {
                 --menu-width: 160px;
@@ -192,12 +229,17 @@
             .sidebar-header {
                 padding: 20px 14px 16px;
             }
+            .menu-divider {
+                padding: 6px 14px 2px;
+                font-size: 9px;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        <!-- 左侧菜单 -->
         <nav class="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-title">UX-Flow</div>
@@ -205,15 +247,32 @@
             </div>
 
             <ul class="menu-list" id="menuList">
+                <!-- 📋 调研与分析 -->
+                <li class="menu-divider">📋 调研与分析</li>
                 <li><button class="menu-item active" data-index="0">竞品分析 <span class="status-dot online"></span></button></li>
                 <li><button class="menu-item" data-index="1">访谈转录分析 <span class="status-dot online"></span></button></li>
+
+                <!-- 🧠 定义与策略 -->
+                <li class="menu-divider">🧠 定义与策略</li>
                 <li><button class="menu-item" data-index="2">信息架构生成 <span class="status-dot online"></span></button></li>
                 <li><button class="menu-item" data-index="3">旅程地图生成 <span class="status-dot online"></span></button></li>
+
+                <!-- 🎨 设计与构思 -->
+                <li class="menu-divider">🎨 设计与构思</li>
                 <li><button class="menu-item" data-index="4">情绪板生成 <span class="status-dot online"></span></button></li>
                 <li><button class="menu-item" data-index="5">文案优化 <span class="status-dot online"></span></button></li>
+
+                <!-- 🔍 审核与验证 -->
+                <li class="menu-divider">🔍 审核与验证</li>
                 <li><button class="menu-item" data-index="6">可访问性检测 <span class="status-dot online"></span></button></li>
                 <li><button class="menu-item" data-index="7">设计系统一致性 <span class="status-dot online"></span></button></li>
+
+                <!-- 🧪 测试与迭代 -->
+                <li class="menu-divider">🧪 测试与迭代</li>
                 <li><button class="menu-item" data-index="8">AB测试生成 <span class="status-dot online"></span></button></li>
+
+                <!-- 💻 交付与闭环 -->
+                <li class="menu-divider">💻 交付与闭环</li>
                 <li><button class="menu-item" data-index="9">设计稿转代码 <span class="status-dot online"></span></button></li>
             </ul>
 
@@ -222,30 +281,64 @@
             </div>
         </nav>
 
+        <!-- 右侧内容区 -->
         <div class="content-area" id="contentArea">
+            <!-- 10个iframe，由JS动态生成 -->
         </div>
     </div>
 
+    <!-- 重置当前工具按钮 -->
+    <button class="reset-btn" id="resetBtn" title="重置当前会话">🔄 重置会话</button>
+
     <script>
         (function() {
-            // ========== 工具配置 ==========
+            // ========== 工具配置（按UX全流程顺序） ==========
             const tools = [
-                { id: 'competitor-monitor', name: '竞品分析', type: 'chatbot', src: 'https://udify.app/chat/k8JOfqtsm1XNpXjo' },
-                { id: 'interview-analysis', name: '访谈转录分析', type: 'chatbot', src: 'https://udify.app/chat/Tdlyvju0oVf6wYZU' },
-                { id: 'ia-generator', name: '信息架构生成', type: 'chatbot', src: 'https://udify.app/chat/Tdlyvju0oVf6wYZU' },
-                { id: 'moodboard-generator', name: '情绪板生成', type: 'chatbot', src: 'https://udify.app/chat/qRQRTypRtbQm50KX' },
-                { id: 'copy-optimizer', name: '文案优化', type: 'chatbot', src: 'https://udify.app/chat/kEoz5w2UeCrysxY9' },
-                { id: 'a11y-checker', name: '可访问性检测', type: 'chatbot', src: 'https://udify.app/chat/ysWrPBwZw2f9dQvY' },
-                { id: 'design-system-checker', name: '设计系统一致性', type: 'chatbot', src: 'https://udify.app/chat/qRQRTypRtbQm50KX' },
-                { id: 'design-to-code', name: '设计稿转代码', type: 'chatbot', src: 'https://udify.app/chat/k8JOfqtsm1XNpXjo' },
-                { id: 'ab-test-generator', name: 'AB测试生成', type: 'chatbot', src: 'https://udify.app/chat/ysWrPBwZw2f9dQvY' },
-                { id: 'journey-map-generator', name: '旅程地图生成', type: 'chatbot', src: 'https://udify.app/chat/Tdlyvju0oVf6wYZU' }
+                { id: 'competitor-monitor', name: '竞品分析', type: 'chatbot', src: 'https://udify.app/chatbot/k8JOfqtsm1XNpXjo' },
+                { id: 'interview-analysis', name: '访谈转录分析', type: 'chatbot', src: 'https://udify.app/chatbot/Tdlyvju0oVf6wYZU' },
+                { id: 'ia-generator', name: '信息架构生成', type: 'chatbot', src: 'https://udify.app/chatbot/Tdlyvju0oVf6wYZU' },
+                { id: 'journey-map-generator', name: '旅程地图生成', type: 'chatbot', src: 'https://udify.app/chatbot/Tdlyvju0oVf6wYZU' },
+                { id: 'moodboard-generator', name: '情绪板生成', type: 'chatbot', src: 'https://udify.app/chatbot/qRQRTypRtbQm50KX' },
+                { id: 'copy-optimizer', name: '文案优化', type: 'chatbot', src: 'https://udify.app/chatbot/kEoz5w2UeCrysxY9' },
+                { id: 'a11y-checker', name: '可访问性检测', type: 'chatbot', src: 'https://udify.app/chatbot/ysWrPBwZw2f9dQvY' },
+                { id: 'design-system-checker', name: '设计系统一致性', type: 'chatbot', src: 'https://udify.app/chatbot/qRQRTypRtbQm50KX' },
+                { id: 'ab-test-generator', name: 'AB测试生成', type: 'chatbot', src: 'https://udify.app/chatbot/ysWrPBwZw2f9dQvY' },
+                { id: 'design-to-code', name: '设计稿转代码', type: 'chatbot', src: 'https://udify.app/chatbot/k8JOfqtsm1XNpXjo' }
             ];
 
-            // ========== 生成带时间戳的URL（仅页面初始化时用） ==========
-            function getChatbotSrc(baseSrc) {
-                const cleanSrc = baseSrc.split('?')[0];
-                return cleanSrc + '?t=' + Date.now();
+            // ========== 生成中转页（确保每次刷新页面都是新会话） ==========
+            function getWrapperHTML(chatbotSrc) {
+                return `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; background: #fff; }
+        .loading {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            color: #bbb; font-size: 14px; z-index: 0;
+            pointer-events: none;
+        }
+        iframe.dify-frame {
+            width: 100%; height: 100%; border: none; display: block;
+            position: relative; z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">加载中...</div>
+    <iframe
+        class="dify-frame"
+        src="${chatbotSrc}"
+        allow="microphone"
+        onload="document.getElementById('loading').style.display='none'">
+    </iframe>
+</body>
+</html>`;
             }
 
             // ========== 生成占位页HTML ==========
@@ -291,6 +384,7 @@
             // ========== 初始化 iframe ==========
             const contentArea = document.getElementById('contentArea');
             const menuItems = document.querySelectorAll('.menu-item');
+            const resetBtn = document.getElementById('resetBtn');
             const iframes = [];
             let activeIndex = 0;
 
@@ -302,8 +396,9 @@
                 iframe.setAttribute('allow', 'microphone');
 
                 if (tool.type === 'chatbot') {
-                    // 【关键】初始化时带时间戳，确保刷新页面后是新会话
-                    iframe.src = getChatbotSrc(tool.src);
+                    // 用 srcdoc 套一层中转页，确保每次刷新页面都是全新环境
+                    // 中转页内的 localStorage 隔离，Dify 旧会话不会残留
+                    iframe.srcdoc = getWrapperHTML(tool.src);
                 } else {
                     iframe.srcdoc = getPlaceholderHTML(tool.name, tool.id);
                 }
@@ -320,20 +415,34 @@
             function switchTool(index) {
                 if (index === activeIndex) return;
 
-                // 菜单高亮切换
                 menuItems[activeIndex].classList.remove('active');
                 menuItems[index].classList.add('active');
 
-                // iframe 显示/隐藏切换（不销毁DOM，不重新加载）
                 iframes[activeIndex].classList.remove('active');
                 iframes[index].classList.add('active');
 
                 activeIndex = index;
 
-                // 记住上次打开的工具
                 try {
                     localStorage.setItem('uxflow-active-tool', index);
                 } catch (e) { /* ignore */ }
+            }
+
+            // ========== 重置当前工具会话 ==========
+            function resetCurrentTool() {
+                const iframe = iframes[activeIndex];
+                const tool = tools[activeIndex];
+
+                if (tool.type === 'chatbot') {
+                    // 重新设置 srcdoc，生成全新的中转页 → 新会话
+                    iframe.srcdoc = getWrapperHTML(tool.src);
+
+                    // 短暂反馈
+                    resetBtn.textContent = '✅ 已重置';
+                    setTimeout(() => {
+                        resetBtn.textContent = '🔄 重置会话';
+                    }, 1500);
+                }
             }
 
             // 绑定菜单点击事件
@@ -344,6 +453,9 @@
                 });
             });
 
+            // 绑定重置按钮
+            resetBtn.addEventListener('click', resetCurrentTool);
+
             // ========== 恢复上次打开的工具 ==========
             try {
                 const savedIndex = parseInt(localStorage.getItem('uxflow-active-tool'), 10);
@@ -352,15 +464,27 @@
                 }
             } catch (e) { /* ignore */ }
 
+            // ========== 键盘快捷键 Ctrl+R 重置当前会话 ==========
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                    // 只拦截重置，不阻止浏览器刷新（浏览器刷新用 Ctrl+Shift+R / Cmd+Shift+R）
+                    if (!e.shiftKey) {
+                        e.preventDefault();
+                        resetCurrentTool();
+                    }
+                }
+            });
+
             // ========== 暴露API到全局 ==========
             window.UXFlow = {
                 switchTool: switchTool,
+                resetCurrentTool: resetCurrentTool,
                 getActiveIndex: () => activeIndex,
                 getIframe: (index) => iframes[index] || null,
                 getTools: () => tools,
                 loadToolPage: function(index, src) {
                     if (iframes[index]) {
-                        iframes[index].src = src;
+                        iframes[index].srcdoc = getWrapperHTML(src);
                         const dot = menuItems[index].querySelector('.status-dot');
                         if (dot) {
                             dot.classList.remove('offline');
@@ -372,10 +496,12 @@
 
             console.log('%c🧰 UX-Flow 回路辅助套件 %c已就绪',
                 'font-weight:bold;font-size:14px;', 'color:#4f8ff7;');
-            console.log('%c🟢 10个工具已全部接入 Dify Chatbot',
+            console.log('%c🟢 10个工具已按UX全流程顺序排列',
                 'color:#34d399;font-size:12px;');
-            console.log('%c💡 刷新页面自动开启新会话，切换菜单保持内容不丢失',
+            console.log('%c💡 刷新页面 = 新会话 | 切换菜单 = 内容保持 | 右下角按钮 = 重置当前会话',
                 'color:#f0c060;font-size:12px;');
+            console.log('%c⌨️ 快捷键：Ctrl+R 重置当前会话',
+                'color:#aaa;font-size:11px;');
 
         })();
     </script>
