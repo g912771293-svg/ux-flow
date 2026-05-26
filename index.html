@@ -248,6 +248,14 @@
                 { id: 'journey-map-generator', name: '旅程地图生成', type: 'chatbot', src: 'https://udify.app/chatbot/Tdlyvju0oVf6wYZU' }
             ];
 
+            // ========== 生成带时间戳的 chatbot URL（避免缓存旧会话） ==========
+            function getChatbotSrc(baseSrc) {
+                // 去掉已有的时间戳参数
+                const cleanSrc = baseSrc.split('?')[0];
+                // 加上当前时间戳，强制新会话
+                return cleanSrc + '?t=' + Date.now();
+            }
+
             // ========== 生成占位页HTML ==========
             function getPlaceholderHTML(toolName, toolId) {
                 return `
@@ -334,8 +342,8 @@
                 iframe.setAttribute('allow', 'microphone');
 
                 if (tool.type === 'chatbot') {
-                    // 已完成的工具：直接加载远程页面
-                    iframe.src = tool.src;
+                    // 【改动1】首次加载也用带时间戳的URL，避免初始加载旧缓存
+                    iframe.src = getChatbotSrc(tool.src);
                 } else {
                     // 未完成的工具：内联占位页
                     iframe.srcdoc = getPlaceholderHTML(tool.name, tool.id);
@@ -360,6 +368,14 @@
                 // iframe 显示/隐藏切换（不销毁DOM，内容保持）
                 iframes[activeIndex].classList.remove('active');
                 iframes[index].classList.add('active');
+
+                // 【改动2】切换到chatbot类型工具时，强制刷新为新会话
+                const tool = tools[index];
+                if (tool.type === 'chatbot') {
+                    const iframe = iframes[index];
+                    // 用时间戳URL刷新，确保每次切换都是新会话
+                    iframe.src = getChatbotSrc(tool.src);
+                }
 
                 activeIndex = index;
 
@@ -391,11 +407,9 @@
                 getActiveIndex: () => activeIndex,
                 getIframe: (index) => iframes[index] || null,
                 getTools: () => tools,
-                // 加载真实工具页面（后续工具完成时使用）
                 loadToolPage: function(index, src) {
                     if (iframes[index]) {
                         iframes[index].src = src;
-                        // 同步更新菜单状态标记
                         const dot = menuItems[index].querySelector('.status-dot');
                         if (dot) {
                             dot.classList.remove('offline');
@@ -405,12 +419,13 @@
                 }
             };
 
+            // 【改动3】更新console日志
             console.log('%c🧰 UX-Flow 回路辅助套件 %c已就绪',
                 'font-weight:bold;font-size:14px;', 'color:#4f8ff7;');
-            console.log('%c🟢 已接入：文案优化、可访问性检测、设计系统一致性',
+            console.log('%c🟢 10个工具已全部接入 Dify Chatbot',
                 'color:#34d399;font-size:12px;');
-            console.log('%c⚫ 其余7个工具为占位状态，陆续接入中',
-                'color:#999;font-size:12px;');
+            console.log('%c💡 每次切换工具会自动开启新会话',
+                'color:#f0c060;font-size:12px;');
 
         })();
     </script>
